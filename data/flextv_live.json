@@ -1,0 +1,454 @@
+{
+  "count": 5,
+  "data": [
+    {
+      "channelId": 1004769,
+      "title": "일기왕혀니",
+      "thumbUrl": "https://cds7iojvuwupjihf0qol15268.edge.naverncp.com/live/image/ls-20260825161138-dE3Lg/thumbnail.jpg",
+      "themeId": 5,
+      "resolution": 1080,
+      "startedAt": "2026-09-06T10:58:03.000Z",
+      "endedAt": null,
+      "isMobile": false,
+      "isInLive": 1,
+      "playSource": {
+        "format": "ncp_llh",
+        "resolution": 480,
+        "url": "https://cds7iojvuwupjihf0qol15268.edge.naverncp.com/live/video/ls-20260825161138-dE3Lg/vfrag480p-16-9_playlist.m3u8?token=st=1788719700~exp=1788762900~acl=/live/video/ls-20260825161138-dE3Lg/*~hmac=ef10e727d37760079bec23c72d4e4f9d694a2a4aa2dc8cb297baf59ba1191c05"
+      },
+      "position": null,
+      "positionCreatedAt": null,
+      "highlightNickname": "",
+      "orderNo": 0,
+      "liveListTop": 0,
+      "liveListTopIcon": "https://static.flextv.co.kr/assets/Default/twich_logo.png",
+      "stat": {
+        "numberOfViews": 0,
+        "numberOfSponsor": 0,
+        "numberOfRecommendations": 0,
+        "numberOfSubs": 0,
+        "totalGrade": 0
+      },
+      "anniversary": null,
+      "barrier": {
+        "blind": 0,
+        "suspended": false,
+        "isLocked": false,
+        "minRatingLevel": 0,
+        "isForAdult": false,
+        "maxViewerCount": 50000,
+        "useAdultThumbnail": 0,
+        "visitAllow": false
+      },
+      "effectType": false,
+      "owner": {
+        "loginId": "k19g61mnx3vmwv",
+        "nickname": "일기왕 혀니",
+        "name": "일기왕 혀니",
+        "thumbUrl": "https://static.flextv.co.kr/20250929/_2cb5d7d499.png",
+        "oauth": null,
+        "fan": {
+          "rating": 0
+        },
+        "luv": 0,
+        "role": "V",
+        "condition": 80,
+        "condition_subscribe": 90,
+        "phone": "",
+        "isAdult": false,
+        "PI": null,
+        "ranker": false,
+        "msgCount": 0,
+        "signature": false,
+        "billboardIs": {
+          "billboardIsView": 1,
+          "billboardIsVibes": 1,
+          "billboardIsSponser": 1
+        },
+        "isBigFan": 1,
+        "isAdultCheck": null,
+        "setting": {},
+        "channelStop": null,
+        "anniversary": {
+          "memberBirthday": null,
+          "isBirthday": false,
+          "birthDday": null,
+          "streamStartDateAt": null,
+          "streamStartDday": null,
+          "isAnniversary": false,
+          "anniversaryDays": []
+        },
+        "oauthRegPath": null,
+        "passwordCheck": null
+      },
+      "playerCount": 14,
+      "tag": [],
+      "isLiveMatching": false,
+      "displayMode": "landscape",
+      "deviceType": "PC"
+    },
+    {
+      "channelId": 137925,
+      "title": "앙농?",
+      "thumbUrl": "https://static.flextv.co.kr/assets/Sales/adultRoom.png",
+      "themeId": 5,
+      "resolution": 1080,
+      "startedAt": "2026-09-06T14:25:18.000Z",
+      "endedAt": null,
+      "isMobile": false,
+      "isInLive": 1,
+      "playSource": {
+        "format": "ncp_llh",
+        "resolution": 480,
+        "url": "https://cds7iojvuwupjihf0qol15268.edge.naverncp.com/live/video/ls-20260814232413-BSMvF/vfrag480p-16-9_playlist.m3u8?token=st=1788719700~exp=1788762900~acl=/live/video/ls-20260814232413-BSMvF/*~hmac=cdc8ff867bf9b6500f5a794158176dd09cff08bacd3c42c6f27a0e4411d024ad"
+      },
+      "position": null,
+      "positionCreatedAt": null,
+      "highlightNickname": "",
+      "orderNo": 0,
+      "newPos": 0,
+      "liveListTop": 0,
+      "liveListTopIcon": "https://static.flextv.co.kr/assets/Default/twich_logo.png",
+      "stat": {
+        "numberOfViews": 0,
+        "numberOfSponsor": 11000,
+        "numberOfRecommendations": 0,
+        "numberOfSubs": 0,
+        "totalGrade": 0
+      },
+      "anniversary": null,
+      "barrier": {
+        "blind": 0,
+        "suspended": false,
+        "isLocked": false,
+        "minRatingLevel": 0,
+        "isForAdult": true,
+        "maxViewerCount": 50000,
+        "useAdultThumbnail": 0,
+        "visitAllow": false
+      },
+      "effectType": false,
+      "owner": {
+        "loginId": "rosa415",
+        "nickname": "BJ로사",
+        "name": "BJ로사",
+        "thumbUrl": "https://nwqkk6zh13414.edge.naverncp.com/members/149356/19g61mn4l6tlk.jpg?type=w&w=180&quality=90",
+        "oauth": null,
+        "fan": {
+          "rating": 0
+        },
+        "luv": 0,
+        "role": "V",
+        "condition": 80,
+        "condition_subscribe": 90,
+        "phone": "",
+        "isAdult": false,
+        "PI": null,
+        "ranker": false,
+        "msgCount": 0,
+        "signature": false,
+        "billboardIs": {
+          "billboardIsView": 1,
+          "billboardIsVibes": 1,
+          "billboardIsSponser": 1
+        },
+        "isBigFan": 1,
+        "isAdultCheck": null,
+        "setting": {},
+        "channelStop": null,
+        "anniversary": {
+          "memberBirthday": null,
+          "isBirthday": false,
+          "birthDday": null,
+          "streamStartDateAt": null,
+          "streamStartDday": null,
+          "isAnniversary": false,
+          "anniversaryDays": []
+        },
+        "oauthRegPath": null,
+        "passwordCheck": null
+      },
+      "playerCount": 9,
+      "tag": [
+        {
+          "code": "8",
+          "des": "소통"
+        }
+      ],
+      "isLiveMatching": false,
+      "displayMode": "landscape",
+      "deviceType": "PC"
+    },
+    {
+      "channelId": 1000221,
+      "title": "우디상",
+      "thumbUrl": "https://static.flextv.co.kr/assets/Sales/adultRoom.png",
+      "themeId": 5,
+      "resolution": 1080,
+      "startedAt": "2026-09-05T14:15:50.000Z",
+      "endedAt": null,
+      "isMobile": false,
+      "isInLive": 1,
+      "playSource": {
+        "format": "ncp_llh",
+        "resolution": 480,
+        "url": "https://cds7iojvuwupjihf0qol15268.edge.naverncp.com/live/video/ls-20260827183907-H4flG/vfrag480p-16-9_playlist.m3u8?token=st=1788719700~exp=1788762900~acl=/live/video/ls-20260827183907-H4flG/*~hmac=34cd53ffe352a36f6a8b74296a66cf9512ece4b9128d459f495f5edac99a09dc"
+      },
+      "position": null,
+      "positionCreatedAt": null,
+      "highlightNickname": "",
+      "orderNo": 0,
+      "liveListTop": 0,
+      "liveListTopIcon": "https://static.flextv.co.kr/assets/Default/twich_logo.png",
+      "stat": {
+        "numberOfViews": 0,
+        "numberOfSponsor": 0,
+        "numberOfRecommendations": 0,
+        "numberOfSubs": 0,
+        "totalGrade": 0
+      },
+      "anniversary": null,
+      "barrier": {
+        "blind": 0,
+        "suspended": false,
+        "isLocked": false,
+        "minRatingLevel": 0,
+        "isForAdult": true,
+        "maxViewerCount": 50000,
+        "useAdultThumbnail": 0,
+        "visitAllow": false
+      },
+      "effectType": false,
+      "owner": {
+        "loginId": "dhrdlqndls",
+        "nickname": "씹소녀우디",
+        "name": "씹소녀우디",
+        "thumbUrl": "https://static.flextv.co.kr/20250929/_2cb5d7d499.png",
+        "oauth": null,
+        "fan": {
+          "rating": 0
+        },
+        "luv": 0,
+        "role": "V",
+        "condition": 80,
+        "condition_subscribe": 90,
+        "phone": "",
+        "isAdult": false,
+        "PI": null,
+        "ranker": false,
+        "msgCount": 0,
+        "signature": false,
+        "billboardIs": {
+          "billboardIsView": 1,
+          "billboardIsVibes": 1,
+          "billboardIsSponser": 1
+        },
+        "isBigFan": 1,
+        "isAdultCheck": null,
+        "setting": {},
+        "channelStop": null,
+        "anniversary": {
+          "memberBirthday": null,
+          "isBirthday": false,
+          "birthDday": null,
+          "streamStartDateAt": null,
+          "streamStartDday": null,
+          "isAnniversary": false,
+          "anniversaryDays": []
+        },
+        "oauthRegPath": null,
+        "passwordCheck": null
+      },
+      "playerCount": 5,
+      "tag": [],
+      "isLiveMatching": false,
+      "displayMode": "landscape",
+      "deviceType": "PC"
+    },
+    {
+      "channelId": 24168,
+      "title": "(24시간 상담) 관상, 사주 봐드립니다. 신점 타로 무당 운세 궁합 성고민 고민상담 소개팅 19금 섹시댄스 희망 ",
+      "thumbUrl": "https://static.flextv.co.kr/assets/Sales/adultRoom.png",
+      "themeId": 5,
+      "resolution": 1080,
+      "startedAt": "2026-09-01T09:17:09.000Z",
+      "endedAt": null,
+      "isMobile": false,
+      "isInLive": 1,
+      "playSource": {
+        "format": "ncp",
+        "resolution": 480,
+        "url": "https://klondy23sayhnjxjq76e15118.edge.naverncp.com/live/video/ls-20260801224040-CbdDa/480p-16-9/playlist.m3u8?token=st=1788719700~exp=1788762900~acl=/live/video/ls-20260801224040-CbdDa/*~hmac=57f5b37d3019c37048bcc3beb678d3332b84099c5f9a694b7373c68b59968f0c"
+      },
+      "position": null,
+      "positionCreatedAt": null,
+      "highlightNickname": "",
+      "orderNo": 0,
+      "liveListTop": 0,
+      "liveListTopIcon": "https://static.flextv.co.kr/assets/Default/twich_logo.png",
+      "stat": {
+        "numberOfViews": 0,
+        "numberOfSponsor": 0,
+        "numberOfRecommendations": 0,
+        "numberOfSubs": 0,
+        "totalGrade": 0
+      },
+      "anniversary": null,
+      "barrier": {
+        "blind": 0,
+        "suspended": false,
+        "isLocked": false,
+        "minRatingLevel": 0,
+        "isForAdult": true,
+        "maxViewerCount": 50000,
+        "useAdultThumbnail": 0,
+        "visitAllow": true
+      },
+      "effectType": false,
+      "owner": {
+        "loginId": "soksn017",
+        "nickname": "꿈희망행운",
+        "name": "꿈희망행운",
+        "thumbUrl": "https://nwqkk6zh13414.edge.naverncp.com/profile/42qjo1ku2lsjw6.jpg?type=w&w=180&quality=90",
+        "oauth": null,
+        "fan": {
+          "rating": 0
+        },
+        "luv": 0,
+        "role": "V",
+        "condition": 80,
+        "condition_subscribe": 90,
+        "phone": "",
+        "isAdult": false,
+        "PI": null,
+        "ranker": false,
+        "msgCount": 0,
+        "signature": false,
+        "billboardIs": {
+          "billboardIsView": 1,
+          "billboardIsVibes": 1,
+          "billboardIsSponser": 1
+        },
+        "isBigFan": 1,
+        "isAdultCheck": null,
+        "setting": {},
+        "channelStop": null,
+        "anniversary": {
+          "memberBirthday": null,
+          "isBirthday": false,
+          "birthDday": null,
+          "streamStartDateAt": null,
+          "streamStartDday": null,
+          "isAnniversary": false,
+          "anniversaryDays": []
+        },
+        "oauthRegPath": null,
+        "passwordCheck": null
+      },
+      "playerCount": 1,
+      "tag": [
+        {
+          "code": "4",
+          "des": "토크"
+        },
+        {
+          "code": "8",
+          "des": "소통"
+        },
+        {
+          "code": "17",
+          "des": "섹시"
+        }
+      ],
+      "isLiveMatching": false,
+      "displayMode": "landscape",
+      "deviceType": "PC"
+    },
+    {
+      "channelId": 478846,
+      "title": "3D모션.영상AI네임택♥고퀄제작할인중♥캐릭터.이미지시그니처&입장.큰손영상제작 홍보배너.천사셋 등 ",
+      "thumbUrl": "https://klondy23sayhnjxjq76e15118.edge.naverncp.com/live/image/ls-20260804203647-8b1vT/thumbnail.jpg",
+      "themeId": 8,
+      "resolution": 1080,
+      "startedAt": "2026-08-29T10:46:27.000Z",
+      "endedAt": null,
+      "isMobile": false,
+      "isInLive": 1,
+      "playSource": {
+        "format": "ncp",
+        "resolution": 480,
+        "url": "https://klondy23sayhnjxjq76e15118.edge.naverncp.com/live/video/ls-20260804203647-8b1vT/480p-16-9/playlist.m3u8?token=st=1788719700~exp=1788762900~acl=/live/video/ls-20260804203647-8b1vT/*~hmac=4f3da6fa6720e0d7a8f7789cad221553053df291c496639aa6f6c38764193eb6"
+      },
+      "position": null,
+      "positionCreatedAt": null,
+      "highlightNickname": "",
+      "orderNo": 0,
+      "liveListTop": 0,
+      "liveListTopIcon": "https://static.flextv.co.kr/assets/Default/twich_logo.png",
+      "stat": {
+        "numberOfViews": 0,
+        "numberOfSponsor": 0,
+        "numberOfRecommendations": 0,
+        "numberOfSubs": 0,
+        "totalGrade": 0
+      },
+      "anniversary": null,
+      "barrier": {
+        "blind": 0,
+        "suspended": false,
+        "isLocked": false,
+        "minRatingLevel": 0,
+        "isForAdult": false,
+        "maxViewerCount": 50000,
+        "useAdultThumbnail": 0,
+        "visitAllow": true
+      },
+      "effectType": false,
+      "owner": {
+        "loginId": "nayeonmong",
+        "nickname": "시그니처소녀",
+        "name": "시그니처소녀",
+        "thumbUrl": "https://nwqkk6zh13414.edge.naverncp.com/members/740174/19g61ls7mh3ja.jpg?type=w&w=180&quality=90",
+        "oauth": null,
+        "fan": {
+          "rating": 0
+        },
+        "luv": 0,
+        "role": "V",
+        "condition": 80,
+        "condition_subscribe": 90,
+        "phone": "",
+        "isAdult": false,
+        "PI": null,
+        "ranker": false,
+        "msgCount": 0,
+        "signature": false,
+        "billboardIs": {
+          "billboardIsView": 1,
+          "billboardIsVibes": 1,
+          "billboardIsSponser": 1
+        },
+        "isBigFan": 1,
+        "isAdultCheck": null,
+        "setting": {},
+        "channelStop": null,
+        "anniversary": {
+          "memberBirthday": null,
+          "isBirthday": false,
+          "birthDday": null,
+          "streamStartDateAt": null,
+          "streamStartDday": null,
+          "isAnniversary": false,
+          "anniversaryDays": []
+        },
+        "oauthRegPath": null,
+        "passwordCheck": null
+      },
+      "playerCount": 1,
+      "tag": [],
+      "isLiveMatching": false,
+      "displayMode": "landscape",
+      "deviceType": "PC"
+    }
+  ]
+}
