@@ -44,12 +44,15 @@ jobs:
             TAG="v1.1.9"
             VERSION="1.1.9"
           fi
+          # 固定高位 versionCode=120，确保高于上一版 v1.1.8(Build 109)，避免 Android 降级安装报错 (-25)
+          BUILD_NUMBER=120
           echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "Resolved Tag: ${TAG}, Version: ${VERSION}"
+          echo "build_number=${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          echo "Resolved Tag: ${TAG}, Version: ${VERSION}, Build Number: ${BUILD_NUMBER}"
 
       - name: Build Release APK
-        run: flutter build apk --release --build-name=${{ steps.get_version.outputs.version }} --build-number=${{ github.run_number }} --android-skip-build-dependency-validation
+        run: flutter build apk --release --build-name=${{ steps.get_version.outputs.version }} --build-number=${{ steps.get_version.outputs.build_number }} --android-skip-build-dependency-validation
 
       - name: Prepare Release Artifacts
         run: |
