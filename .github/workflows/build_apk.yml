@@ -56,6 +56,12 @@ jobs:
           mkdir -p release-artifacts
           cp build/app/outputs/flutter-apk/app-release.apk "release-artifacts/JinriCP-Pure-${{ steps.get_version.outputs.tag_name }}.apk"
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "JinriCP-Pure-${{ steps.get_version.outputs.tag_name }}"
+          path: release-artifacts/*.apk
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
@@ -63,49 +69,20 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.tag_name }}
           name: "JinriCP 纯净原生版 ${{ steps.get_version.outputs.tag_name }} (Build ${{ github.run_number }})"
           body: |
-            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 分类下移至最近观看下方并完成UI对齐
+            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 紧急修复黄果短剧改版播放与线路增强
 
-            - 🎯 **布局结构优化**：
-              - 按照用户要求，将黄瓜短剧四维分类筛选矩阵从搜索栏下方下移至【最近观看】下方；
-              - 紧挨下方的【精选片单】短剧列表，形成“续播在上、找剧筛选在中、片单呈现于下”的自然视觉流。
-            - 📐 **UI 像素级对齐**：
-              - 采用统一的 `AppTheme.cardBg` 主题圆角卡片（边距 14dp、圆角 16dp、微弱边框与阴影）；
-              - 四大维度（内容线 / 标签 / 状态 / 排序）左侧标签文字左边缘基线绝对对齐；
-              - 右侧 Chips 胶囊文字严格居中，选中翠绿高亮带微光，未选中低调通透。
-
-            - 🥒 **黄瓜短剧 1:1 全维度分类矩阵官方对齐**：
-              - **内容线**：全部、原创、魔改、AI漫剧、真人短剧、AI短剧；
-              - **标签**：全部、都市邻里、甜宠恋爱、古装玄幻、逆袭、复仇逆袭、虐恋情深、穿越重生、惊悚悬疑、霸总激情、战神归来、校园恋爱、末世生存；
-              - **状态**：全部、连载中、已完结；
-              - **排序**：最热、最新、追剧最多；
-              - **四维多维自由组合**：原生级实时联动筛选，精准请求服务端分类数据；
-            - 🎨 **界面体验极简化**：彻底移除大厅右上角图标，黄瓜翠绿微光专属分类矩阵，轻巧灵动。
-              - 官方直连高可用业务线路池：内置 `https://porncz.wuscaznx.cc` 等优质线路，自动穿透发布页直连业务站点；
-              - 全集选集与视频流秒开：直接提取有效 `.m3u8` 直连，杜绝播放异常；
-            - 🧹 **界面极简化**：
-              - 彻底移除短剧大厅右上角的源切换图标，保持界面纯净自然，源切换统一在设置页面操作。
-            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 短剧双源独立记忆与快速切换版
-
-            - 🎬 **短剧双源专属选项与独立持久化记忆**：
-              - 选项精简归一：短剧源仅设两大独立专属选项：第一个【黄果短剧】、第二个【黄瓜短剧】；
-              - 独立持久化记忆：点击任一短剧源，首次未配置时提示手动输入地址并持久化记忆；两套源各自独立保存专属 Base URL；
-              - 秒级无缝切换：下一次打开或切换源直接点击即可立即生效，无需反复输入，除非用户主动点击修改；
-              - 设置界面与短剧大厅全局联动：在设置界面提供高质感卡片与修改入口，在短剧大厅顶部 AppBar 亦提供专属快捷切换胶囊。
-            - 🏠 **【首页】100% 绝对对齐官方首页两大专属板块**：
-              - **【精选推荐】**：精准锁定源站首页根路径 `<section>` 中的 `精选推荐`，翻页无缝对接专属推荐接口；
-              - **【最近新上】**：精准锁定源站首页根路径 `<section>` 中的 `最近上新`，翻页直连全部分页专属 API（单页 21 条），内容与位次毫厘不差；
-            - 🎨 **【AI成人短剧】与【AI成人漫剧】全子栏目与全部分页 100% 绝对对齐**：
-              - **最新更新**：精准定位正文面板与官方分页，漫剧与短剧分别抓取专属页面，增加防 Nginx 回退污染校验，剔除广告卡片；
-              - **当前热播**：第 1 页优先锁定预渲染模板 `template[data-panel-cards="hot"]`，翻页直连专属 API（单页 21 条），内容与位次 1:1 丝毫不差；
-              - **独家原创**：第 1 页优先锁定预渲染模板 `template[data-panel-cards="original"]`，翻页精准对齐；
-              - **随机推荐**：彻底拔除静态固定模板，动态请求时间戳 API 并配合客户端微秒真随机洗牌，每次点击刷新或换一批 100% 呈现全新随机作品！
-            - ⚡ **漫剧/换脸/魔改独立视频库隔离**：
-              - 专属 API 与防回退机制彻底杜绝分类雷同或内容错位。
-            - 🎬 **短剧与漫剧国内免翻墙直连播放与秒开体验**：
-              - 官方主站直连池高可用选路，国内高速播放。
-            - 🖼️ **封面图片 CDN 彻底自愈秒开**：
-              - 动态重写映射至官方当前真实极速直连 CDN `https://pic.wirqed.cn`。
-            - 🚫 **100% 纯净无广告**：零弹窗、零不良推广。
+            - 🎬 **紧急修复黄果短剧改版播放（解决无限转圈 Loading）**：
+              - 适配黄果短剧源站最新异步 Playback API（`POST /api/videos/{dramaId}/episodes/{episodeNum}/playback`）；
+              - 自动提取真实带时效签名的 m3u8 直连流，彻底告别旧版客户端因内联数据为空导致的死循环转圈与黑屏；
+              - 建立多线路高可用自动降级轮询机制，主线路与备用线路秒级自动容灾。
+            - 🌐 **发布页线路锁定策略：严格默认调用第 1 个地址**：
+              - 默认发布页源站正式更新为 `https://huangguoai.ai/`；
+              - 保序解析发布页 HTML 结构中的路线列表，100% 默认锁定提取出的第一条推荐线路；
+              - 无论用户输入哪个发布页（如 `huangguo4.com`、`huangguo2.com` 等），自动保序提取首条线路并即时生效。
+            - 🥒 **黄瓜短剧 1:1 全维度分类矩阵与双源独立记忆**：
+              - 四维矩阵（内容线 / 标签 / 状态 / 排序）与官方原生对齐；
+              - 双源专属记忆，无缝秒级切换；
+              - 100% 纯净无广告，极速开播。
           files: release-artifacts/*.apk
           draft: false
           prerelease: false
