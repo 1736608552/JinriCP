@@ -571,7 +571,7 @@ class HgdjuDramaService {
 
     // 2. 深度正则自愈提取：将 SSR 编码中的 \u002F 全量还原为 /
     final normalized = rawHtml.replaceAll(r'\u002F', '/').replaceAll(r'\/', '/');
-    final m3u8Match = RegExp(r'https?://[^\s"\'<>\\]+?\.m3u8[^\s"\'<>\\]*').firstMatch(normalized);
+    final m3u8Match = RegExp(r'''https?://[^\s"'<>\\]+?\.m3u8[^\s"'<>\\]*''').firstMatch(normalized);
     if (m3u8Match != null) {
       return m3u8Match.group(0)!.trim();
     }
