@@ -41,11 +41,11 @@ class UpdateInfo {
 }
 
 class UpdateService {
-  static const String currentVersionName = '1.1.9';
-  static const int currentBuildNumber = 110; // 本地当前构建编号
+  static const String currentVersionName = '1.2.0';
+  static const int currentBuildNumber = 130; // 本地当前构建编号
 
-  static const String _defaultOwner = 'q52694787-hash';
-  static const String _defaultRepo = 'jinricp-pure-app';
+  static const String _defaultOwner = '1736608552';
+  static const String _defaultRepo = 'JinriCP';
   static const String _defaultToken = '';
 
   static const MethodChannel _channel = MethodChannel('com.jinri.pureapp/system_controls');
@@ -327,10 +327,14 @@ class UpdateService {
         } catch (_) {}
       }
 
-      // 构建下载候选直链列表：首选私有签名直链，备选官方直链与镜像代理
+      // 构建下载候选直链列表：首选局域网直连，备选私有签名直链与国内极速镜像代理
       final candidateUrls = <String>[];
 
-      // 1. 首选：针对私有仓库，通过 GitHub API 提取 302 Azure 签名极速直链
+      // 0. 超首选：局域网本地极速节点（若处于同一局域网 WiFi，千兆秒开直下）
+      candidateUrls.add('http://192.168.1.196:9888/JinriCP-Pure-${info.versionName}.apk');
+      candidateUrls.add('http://192.168.1.196:9888/latest.apk');
+
+      // 1. 首选：针对私有仓库，通过 GitHub API 提取 302 签名直链
       if (info.assetId > 0) {
         final signed = await fetchSignedDownloadUrl(info.assetId);
         if (signed != null && signed.isNotEmpty) {
@@ -338,10 +342,11 @@ class UpdateService {
         }
       }
 
-      // 2. 备选：公开下载直链与镜像代理直链（降级兜底）
+      // 2. 备选：公开下载直链与国内 CDN 极速镜像代理直链（多通道自动容灾降级）
       if (info.downloadUrl.isNotEmpty) {
         candidateUrls.add(info.downloadUrl);
         candidateUrls.add('https://ghfast.top/${info.downloadUrl}');
+        candidateUrls.add('https://ghproxy.net/${info.downloadUrl}');
         candidateUrls.add('https://mirror.ghproxy.com/${info.downloadUrl}');
       }
 

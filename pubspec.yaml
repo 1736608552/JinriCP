@@ -1,7 +1,7 @@
 name: jinricp_pure_app
 description: "Pure native Flutter client for directory-based video browsing with zero ads."
 publish_to: "none"
-version: 1.1.9+120
+version: 1.2.0+130
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

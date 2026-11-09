@@ -41,11 +41,11 @@ jobs:
             TAG="${GITHUB_REF#refs/tags/}"
             VERSION="${TAG#v}"
           else
-            TAG="v1.1.9"
-            VERSION="1.1.9"
+            TAG="v1.2.0"
+            VERSION="1.2.0"
           fi
-          # 固定高位 versionCode=120，确保高于上一版 v1.1.8(Build 109)，避免 Android 降级安装报错 (-25)
-          BUILD_NUMBER=120
+          # 固定 versionCode=130，确保高于上一版 v1.1.9(120) 与 v1.1.8(109)，避免 Android 降级安装报错 (-25)
+          BUILD_NUMBER=130
           echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "build_number=${BUILD_NUMBER}" >> $GITHUB_OUTPUT
@@ -70,22 +70,20 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
         with:
           tag_name: ${{ steps.get_version.outputs.tag_name }}
-          name: "JinriCP 纯净原生版 ${{ steps.get_version.outputs.tag_name }} (Build ${{ github.run_number }})"
+          name: "JinriCP 纯净原生版 ${{ steps.get_version.outputs.tag_name }} (Build 130)"
           body: |
-            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 紧急修复黄果短剧改版播放与线路增强
+            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 紧急修复黄瓜短剧播放与在线升级全链路
 
-            - 🎬 **紧急修复黄果短剧改版播放（解决无限转圈 Loading）**：
-              - 适配黄果短剧源站最新异步 Playback API（`POST /api/videos/{dramaId}/episodes/{episodeNum}/playback`）；
-              - 自动提取真实带时效签名的 m3u8 直连流，彻底告别旧版客户端因内联数据为空导致的死循环转圈与黑屏；
-              - 建立多线路高可用自动降级轮询机制，主线路与备用线路秒级自动容灾。
-            - 🌐 **发布页线路锁定策略：严格默认调用第 1 个地址**：
-              - 默认发布页源站正式更新为 `https://huangguoai.ai/`；
-              - 保序解析发布页 HTML 结构中的路线列表，100% 默认锁定提取出的第一条推荐线路；
-              - 无论用户输入哪个发布页（如 `huangguo4.com`、`huangguo2.com` 等），自动保序提取首条线路并即时生效。
-            - 🥒 **黄瓜短剧 1:1 全维度分类矩阵与双源独立记忆**：
-              - 四维矩阵（内容线 / 标签 / 状态 / 排序）与官方原生对齐；
-              - 双源专属记忆，无缝秒级切换；
-              - 100% 纯净无广告，极速开播。
+            - 🥒 **紧急彻底修复黄瓜短剧播放（解决《秘密教学》等无限转圈 Loading）**：
+              - 深度排查发现黄瓜短剧页面 SSR 将斜杠全量编码为 `\u002F` 导致原正则匹配全部落空；
+              - 全新接入 Nuxt 3 数据岛深度反序列化引擎，直接精准直连 `media.source_url` 真实带签名的 m3u8 直连流；
+              - 选集列表 1:1 对齐官方真实全分集，首集与后续各分集秒开起播，彻底杜绝转圈卡死。
+            - 🔄 **全面修复在线更新全链路（开箱即用、一键在线无缝升级）**：
+              - 仓库正式对齐公开仓库 `1736608552/JinriCP`，手机端免 Token 即可匿名检测最新版本；
+              - 内置局域网超高速直连与国内优质 CDN 镜像加速通道（`ghfast.top` 等），千兆秒下；
+              - 固定 `versionCode=130`，系统判定为标准平滑更新，彻底杜绝系统报错【-25 无法降级安装】。
+            - 🎬 **黄果短剧改版异步 Playback API 与发布页首选保序特性完整继承**：
+              - 双短剧源各自独立记忆，开箱秒播，纯净零广告。
           files: release-artifacts/*.apk
           draft: false
           prerelease: false

@@ -21,11 +21,15 @@ class HgdjuDramaService {
 
   /// 官方直连高可用业务线路池（防封自动回退）
   static const List<String> fallbackLines = [
+    'https://porncz.ywwegfkd.cc',
+    'https://rixgqa.ywwegfkd.cc',
+    'https://xyz.uraifjhut.cc',
+    'https://mkqjue.ywwegfkd.cc',
+    'https://qwer.uraifjhut.cc',
+    'https://abc.uraifjhut.cc',
     'https://xyz.zgoqmlyp.cc',
-    'https://qwer.zgoqmlyp.cc',
-    'https://abc.zgoqmlyp.cc',
-    'https://hgdju.com',
     'https://hgdju1.com',
+    'https://hgdj.ai',
   ];
 
   /// 黄瓜短剧一级分类（内容线）- 1:1 对齐官方截图
@@ -140,8 +144,8 @@ class HgdjuDramaService {
       _resolvedLiveBaseUrl = null;
     }
 
-    // 若未填、为空或包含已失效的旧域名（wuscaznx），直接使用首选官方真实可用线路
-    if (u.isEmpty || u.contains('wuscaznx')) {
+    // 若未填、为空或包含已失效的旧域名（wuscaznx/zgoqmlyp），直接使用首选官方真实可用线路
+    if (u.isEmpty || u.contains('wuscaznx') || u.contains('zgoqmlyp')) {
       return fallbackLines.first;
     }
 
@@ -156,11 +160,11 @@ class HgdjuDramaService {
         final resp = await _dio.get<String>(u);
         if (resp.statusCode == 200 && resp.data != null) {
           final html = resp.data!;
-          final lineReg = RegExp(r'https://[a-zA-Z0-9\.\-]+\.(?:zgoqmlyp|wuscaznx)\.cc');
+          final lineReg = RegExp(r'https://[a-zA-Z0-9\.\-]+\.(?:ywwegfkd|uraifjhut|zgoqmlyp|wuscaznx|zvdumduz)\.cc');
           final matches = lineReg.allMatches(html);
           for (final m in matches) {
             final matchUrl = m.group(0)!;
-            if (matchUrl.contains('zgoqmlyp')) {
+            if (matchUrl.contains('ywwegfkd') || matchUrl.contains('uraifjhut')) {
               _resolvedLiveBaseUrl = matchUrl;
               return _resolvedLiveBaseUrl!;
             }
@@ -536,6 +540,45 @@ class HgdjuDramaService {
     return null;
   }
 
+  /// 从黄瓜短剧播放页 HTML 中深度自愈提取真实带签名的 m3u8 直连流
+  static String extractStreamUrlFromHtml(String rawHtml) {
+    if (rawHtml.isEmpty) return '';
+
+    // 1. 优先尝试精准反序列化 Nuxt 3 数据岛 (__NUXT_DATA__)
+    try {
+      final doc = html_parser.parse(rawHtml);
+      final nuxtScript = doc.querySelector('script#__NUXT_DATA__');
+      if (nuxtScript != null) {
+        final rawData = json.decode(nuxtScript.text.trim()) as List<dynamic>;
+        dynamic resolveVal(dynamic v) {
+          if (v is int && v >= 0 && v < rawData.length) {
+            return rawData[v];
+          }
+          return v;
+        }
+
+        for (final item in rawData) {
+          if (item is Map) {
+            // 匹配 media 对象中的 source_url
+            final sourceUrl = resolveVal(item['source_url']);
+            if (sourceUrl is String && sourceUrl.contains('.m3u8')) {
+              return sourceUrl.trim();
+            }
+          }
+        }
+      }
+    } catch (_) {}
+
+    // 2. 深度正则自愈提取：将 SSR 编码中的 \u002F 全量还原为 /
+    final normalized = rawHtml.replaceAll(r'\u002F', '/').replaceAll(r'\/', '/');
+    final m3u8Match = RegExp(r'https?://[^\s"\'<>\\]+?\.m3u8[^\s"\'<>\\]*').firstMatch(normalized);
+    if (m3u8Match != null) {
+      return m3u8Match.group(0)!.trim();
+    }
+
+    return '';
+  }
+
   /// 解析播放页提取短剧详情与全集剧集列表
   static ShortDrama? parseDramaDetailHtml(String html, String baseUrl, String slug) {
     try {
@@ -559,41 +602,79 @@ class HgdjuDramaService {
         cover = imgMeta.attributes['content'] ?? '';
       }
 
-      // 提取总集数
-      int totalEp = 1;
-      final epMatches = RegExp(r'(?:全|共)\s*(\d+)\s*集').allMatches(html);
-      for (final m in epMatches) {
-        final n = int.tryParse(m.group(1)!) ?? 1;
-        if (n > totalEp) totalEp = n;
-      }
-      if (totalEp <= 1) {
-        // 从页面选集数字提取最大值
-        final numMatches = RegExp(r'/play/' + RegExp.escape(slug) + r'/(\d+)').allMatches(html);
-        for (final m in numMatches) {
+      // 提取首集可用真实直连 m3u8 流地址
+      final firstEpStream = extractStreamUrlFromHtml(html);
+
+      // 提取全集剧集列表（优先从 Nuxt 3 数据岛反序列化完整分集列表）
+      final List<DramaEpisode> episodes = [];
+      try {
+        final nuxtScript = doc.querySelector('script#__NUXT_DATA__');
+        if (nuxtScript != null) {
+          final rawData = json.decode(nuxtScript.text.trim()) as List<dynamic>;
+          dynamic resolveVal(dynamic v) {
+            if (v is int && v >= 0 && v < rawData.length) {
+              return rawData[v];
+            }
+            return v;
+          }
+
+          for (final item in rawData) {
+            if (item is Map && item.containsKey('episodes')) {
+              final epList = resolveVal(item['episodes']);
+              if (epList is List && epList.isNotEmpty) {
+                for (final e in epList) {
+                  final eObj = resolveVal(e);
+                  if (eObj is Map) {
+                    final epNum = resolveVal(eObj['number']) as int? ?? (episodes.length + 1);
+                    final epTitle = resolveVal(eObj['title'])?.toString() ?? '第$epNum集';
+                    final epRoute = resolveVal(eObj['route'])?.toString() ?? '/play/$slug/$epNum';
+                    episodes.add(
+                      DramaEpisode(
+                        episodeNum: epNum,
+                        title: epTitle.startsWith('第') ? epTitle : '第$epNum集',
+                        videoUrl: (epNum == 1 && firstEpStream.isNotEmpty) ? firstEpStream : '',
+                        embedUrl: epRoute.startsWith('http') ? epRoute : '$baseUrl$epRoute',
+                      ),
+                    );
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
+      } catch (_) {}
+
+      // 若未从数据岛提取到分集，执行兜底提取
+      if (episodes.isEmpty) {
+        int totalEp = 1;
+        final epMatches = RegExp(r'(?:全|共)\s*(\d+)\s*集').allMatches(html);
+        for (final m in epMatches) {
           final n = int.tryParse(m.group(1)!) ?? 1;
           if (n > totalEp) totalEp = n;
         }
-      }
-      if (totalEp <= 1) totalEp = 20; // 兜底至少20集供选集换源
+        if (totalEp <= 1) {
+          final numMatches = RegExp(r'/play/' + RegExp.escape(slug) + r'/(\d+)').allMatches(html);
+          for (final m in numMatches) {
+            final n = int.tryParse(m.group(1)!) ?? 1;
+            if (n > totalEp) totalEp = n;
+          }
+        }
+        if (totalEp <= 1) totalEp = 20;
 
-      // 提取首集可用真实直连 m3u8 流地址
-      String firstEpStream = '';
-      final m3u8Match = RegExp(r'https?://[^\s"<>]+?\.m3u8[^\s"<>]*').firstMatch(html);
-      if (m3u8Match != null) {
-        firstEpStream = m3u8Match.group(0)!;
+        for (int i = 1; i <= totalEp; i++) {
+          episodes.add(
+            DramaEpisode(
+              episodeNum: i,
+              title: '第$i集',
+              videoUrl: (i == 1 && firstEpStream.isNotEmpty) ? firstEpStream : '',
+              embedUrl: '$baseUrl/play/$slug/$i',
+            ),
+          );
+        }
       }
 
-      final List<DramaEpisode> episodes = [];
-      for (int i = 1; i <= totalEp; i++) {
-        episodes.add(
-          DramaEpisode(
-            episodeNum: i,
-            title: '第$i集',
-            videoUrl: (i == 1 && firstEpStream.isNotEmpty) ? firstEpStream : '',
-            embedUrl: '$baseUrl/play/$slug/$i',
-          ),
-        );
-      }
+      final totalCount = episodes.isNotEmpty ? episodes.length : 1;
 
       return ShortDrama(
         id: slug,
@@ -601,11 +682,11 @@ class HgdjuDramaService {
         coverUrl: cover,
         description: '$title · 黄瓜短剧精品全集',
         category: '黄瓜短剧',
-        totalEpisodes: totalEp,
+        totalEpisodes: totalCount,
         rating: 9.8,
         playCount: '1.8万',
         badge: '黄瓜独家',
-        updateInfo: '全 $totalEp 集',
+        updateInfo: '全 $totalCount 集',
         tags: ['黄瓜短剧', '全集完结', '高清直连'],
         episodes: episodes,
         itemType: 'drama',
@@ -636,10 +717,9 @@ class HgdjuDramaService {
       );
 
       if (resp.statusCode == 200 && resp.data != null) {
-        final html = resp.data!;
-        final m3u8Match = RegExp(r'https?://[^\s"<>]+?\.m3u8[^\s"<>]*').firstMatch(html);
-        if (m3u8Match != null) {
-          return m3u8Match.group(0);
+        final stream = extractStreamUrlFromHtml(resp.data!);
+        if (stream.isNotEmpty) {
+          return stream;
         }
       }
     } catch (_) {}
@@ -655,9 +735,10 @@ class HgdjuDramaService {
           ),
         );
         if (resp.statusCode == 200 && resp.data != null) {
-          final m3u8Match = RegExp(r'https?://[^\s"<>]+?\.m3u8[^\s"<>]*').firstMatch(resp.data!);
-          if (m3u8Match != null) {
-            return m3u8Match.group(0);
+          final stream = extractStreamUrlFromHtml(resp.data!);
+          if (stream.isNotEmpty) {
+            _resolvedLiveBaseUrl = altBase;
+            return stream;
           }
         }
       } catch (_) {}
