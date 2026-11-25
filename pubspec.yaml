@@ -17,6 +17,9 @@ dependencies:
   flutter_spinkit: ^5.2.0
   encrypt: ^5.0.3
 
+dependency_overrides:
+  package_info_plus: 8.1.2
+
 
 dev_dependencies:
   flutter_test:
