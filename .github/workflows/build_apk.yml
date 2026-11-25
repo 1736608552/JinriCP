@@ -41,18 +41,24 @@ jobs:
             TAG="${GITHUB_REF#refs/tags/}"
             VERSION="${TAG#v}"
           else
-            TAG="v1.2.0"
-            VERSION="1.2.0"
+            TAG="v1.2.1"
+            VERSION="1.2.1"
           fi
-          # 固定 versionCode=130，确保高于上一版 v1.1.9(120) 与 v1.1.8(109)，避免 Android 降级安装报错 (-25)
-          BUILD_NUMBER=130
+          BUILD_NUMBER=131
           echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "build_number=${BUILD_NUMBER}" >> $GITHUB_OUTPUT
           echo "Resolved Tag: ${TAG}, Version: ${VERSION}, Build Number: ${BUILD_NUMBER}"
 
+      - name: Precache Flutter Artifacts
+        run: flutter precache --android
+
       - name: Build Release APK
-        run: flutter build apk --release --build-name=${{ steps.get_version.outputs.version }} --build-number=${{ steps.get_version.outputs.build_number }} --android-skip-build-dependency-validation
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+        run: |
+          flutter build apk --release --build-name=${{ steps.get_version.outputs.version }} --build-number=${{ steps.get_version.outputs.build_number }} --android-skip-build-dependency-validation || \
+          (echo "First build attempt failed, retrying in 5s..." && sleep 5 && flutter build apk --release --build-name=${{ steps.get_version.outputs.version }} --build-number=${{ steps.get_version.outputs.build_number }} --android-skip-build-dependency-validation)
 
       - name: Prepare Release Artifacts
         run: |
@@ -70,20 +76,23 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
         with:
           tag_name: ${{ steps.get_version.outputs.tag_name }}
-          name: "JinriCP 纯净原生版 ${{ steps.get_version.outputs.tag_name }} (Build 130)"
+          name: "JinriCP 纯净原生版 ${{ steps.get_version.outputs.tag_name }} (Build 131)"
           body: |
-            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 紧急修复黄瓜短剧播放与在线升级全链路
+            ### 🌟 JinriCP 纯净原生 Android 客户端 ${{ steps.get_version.outputs.tag_name }} 全新高定播控交互与视觉系统发布
 
-            - 🥒 **紧急彻底修复黄瓜短剧播放（解决《秘密教学》等无限转圈 Loading）**：
-              - 深度排查发现黄瓜短剧页面 SSR 将斜杠全量编码为 `\u002F` 导致原正则匹配全部落空；
-              - 全新接入 Nuxt 3 数据岛深度反序列化引擎，直接精准直连 `media.source_url` 真实带签名的 m3u8 直连流；
-              - 选集列表 1:1 对齐官方真实全分集，首集与后续各分集秒开起播，彻底杜绝转圈卡死。
-            - 🔄 **全面修复在线更新全链路（开箱即用、一键在线无缝升级）**：
-              - 仓库正式对齐公开仓库 `1736608552/JinriCP`，手机端免 Token 即可匿名检测最新版本；
-              - 内置局域网超高速直连与国内优质 CDN 镜像加速通道（`ghfast.top` 等），千兆秒下；
-              - 固定 `versionCode=130`，系统判定为标准平滑更新，彻底杜绝系统报错【-25 无法降级安装】。
-            - 🎬 **黄果短剧改版异步 Playback API 与发布页首选保序特性完整继承**：
-              - 双短剧源各自独立记忆，开箱秒播，纯净零广告。
+            - 🎨 **全新高定 UI 与视觉规范升级**：
+              - 沉浸式电影级暗黑底色与流光渐变（`playerTopScrim` / `playerBottomScrim`），彻底消除画面高亮时文字遮挡失真；
+              - 纯正毛玻璃拟态质感胶囊（`playerGlassDecoration`），带来极致通透视效体验。
+            - 🎛️ **全能播控手势与极简毛玻璃 HUD**：
+              - 左右双侧滑动阻尼控光控音，居中半透明高斯模糊 HUD 实时反馈数值；
+              - 短剧支持横向滑屏快进/快退（Seek 预览）、长按屏幕 2.0x 极速快进；
+              - 全新单向防误触锁屏按钮，全屏观影更沉浸纯粹。
+            - ⚡ **直播与短剧播放体验全面跃升**：
+              - 直播间支持一键播放/暂停、自适应画面铺满切换；
+              - 短剧支持 1.0x / 1.25x / 1.5x / 2.0x 循环无级倍速切换与轻触振动反馈；
+              - 底部导航栏切换增加触觉感知反馈，手感更加灵动跟手。
+            - 🛡️ **底层依赖与构建加固**：
+              - 锁定依赖版本契约，支持 Android 各版本无感覆盖升级（`versionCode=131`）。
           files: release-artifacts/*.apk
           draft: false
           prerelease: false
