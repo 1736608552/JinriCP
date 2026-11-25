@@ -8,6 +8,7 @@ import '../models/live_stream.dart';
 import '../services/api_service.dart';
 import '../services/proxy_route_service.dart';
 import '../services/system_controls_service.dart';
+import '../services/theme_service.dart';
 import '../widgets/player_gesture_overlay.dart';
 import '../widgets/route_selection_modal.dart';
 
@@ -45,6 +46,7 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
   int _manualRetryCount = 0;
   bool _isCoverFit = false; // 是否全屏铺满画面
   bool _showControls = true; // 是否显示顶栏/主播信息/操作按钮（全屏沉浸纯净播放开关）
+  bool _isLocked = false; // 锁屏防误触状态
   Timer? _hideControlsTimer;
   late int _currentChannelIndex;
   late String _currentTitle;
@@ -1192,6 +1194,7 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
                           // 竖屏/横屏高敏手势控光控音 + 上下滑切台手势 + 单击切换控制层显隐
                           Positioned.fill(
                             child: PlayerGestureOverlay(
+                              isLocked: _isLocked,
                               onTap: _toggleControls,
                               onNextChannel: _switchToNextChannel,
                               onPrevChannel: _switchToPrevChannel,
@@ -1201,48 +1204,174 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
                         ],
                       ),
 
+            // 1.5 顶部与底部电影级渐变遮罩 (Scrim)，确保亮画面下文字与图标清晰可读
+            if (_showControls && !_isLocked) ...[
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).padding.top + 84,
+                child: const IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(gradient: AppTheme.playerTopScrim),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).padding.bottom + 110,
+                child: const IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(gradient: AppTheme.playerBottomScrim),
+                  ),
+                ),
+              ),
+            ],
+
             // 2. 顶部悬浮胶囊导航栏（可平滑淡出，实现 100% 无遮挡纯净全屏）
             Positioned(
               top: MediaQuery.of(context).padding.top + 8,
               left: 12 + MediaQuery.of(context).padding.left,
               right: 12 + MediaQuery.of(context).padding.right,
               child: AnimatedOpacity(
-                opacity: _showControls ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
+                opacity: (_showControls && !_isLocked) ? 1.0 : 0.0,
+                duration: AppTheme.animNormal,
+                curve: AppTheme.animCurve,
                 child: IgnorePointer(
-                  ignoring: !_showControls,
+                  ignoring: !_showControls || _isLocked,
                   child: _buildTopCapsuleBar(),
                 ),
               ),
             ),
 
-            // 3. 右下角极简【全屏 / 退出全屏】悬浮纽（爱奇艺式双向切换，轻触屏幕任意位置唤醒）
+            // 2.5 左侧锁屏防误触悬浮按钮（控制层显示或已锁屏时可见）
+            Positioned(
+              left: 14 + MediaQuery.of(context).padding.left,
+              top: MediaQuery.of(context).size.height * 0.45,
+              child: AnimatedOpacity(
+                opacity: _showControls ? 1.0 : 0.0,
+                duration: AppTheme.animFast,
+                child: IgnorePointer(
+                  ignoring: !_showControls,
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        _isLocked = !_isLocked;
+                        if (_isLocked) {
+                          _showControls = true;
+                        }
+                      });
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: AppTheme.playerGlassDecoration(
+                        radius: 20,
+                        borderColor: _isLocked
+                            ? AppTheme.primaryPink.withOpacity(0.65)
+                            : Colors.white.withOpacity(0.18),
+                        bgOpacity: _isLocked ? 0.72 : 0.45,
+                      ),
+                      child: Icon(
+                        _isLocked ? Icons.lock_rounded : Icons.lock_open_rounded,
+                        color: _isLocked ? AppTheme.primaryPink : Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // 3. 右下角高定播控操作组（播放/暂停 + 画面比例 + 全屏切换）
             Positioned(
               right: 16 + MediaQuery.of(context).padding.right,
               bottom: 24 + MediaQuery.of(context).padding.bottom,
               child: AnimatedOpacity(
-                opacity: _showControls ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
+                opacity: (_showControls && !_isLocked) ? 1.0 : 0.0,
+                duration: AppTheme.animNormal,
+                curve: AppTheme.animCurve,
                 child: IgnorePointer(
-                  ignoring: !_showControls,
-                  child: _buildFullScreenBtn(isLandscape),
+                  ignoring: !_showControls || _isLocked,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 播放 / 暂停快捷按钮
+                      if (_videoPlayerController != null && _videoPlayerController!.value.isInitialized)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: GestureDetector(
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              setState(() {
+                                if (_videoPlayerController!.value.isPlaying) {
+                                  _videoPlayerController!.pause();
+                                } else {
+                                  _videoPlayerController!.play();
+                                }
+                              });
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: AppTheme.playerGlassDecoration(radius: 20, bgOpacity: 0.55),
+                              child: Icon(
+                                _videoPlayerController!.value.isPlaying
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
+                                color: Colors.white,
+                                size: 22,
+                              ),
+                            ),
+                          ),
+                        ),
+                      // 画面比例切换（自适应 / 铺满）
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            _toggleScreenFit();
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: AppTheme.playerGlassDecoration(
+                              radius: 20,
+                              borderColor: _isCoverFit
+                                  ? AppTheme.electricCyan.withOpacity(0.6)
+                                  : Colors.white.withOpacity(0.16),
+                              bgOpacity: 0.55,
+                            ),
+                            child: Icon(
+                              _isCoverFit ? Icons.fit_screen_rounded : Icons.aspect_ratio_rounded,
+                              color: _isCoverFit ? AppTheme.electricCyan : Colors.white,
+                              size: 19,
+                            ),
+                          ),
+                        ),
+                      ),
+                      _buildFullScreenBtn(isLandscape),
+                    ],
+                  ),
                 ),
               ),
             ),
 
             // 4. 左下角主播微信息浮层（可平滑淡出，彻底告别文字糊脸遮挡）
             Positioned(
-              left: 14,
-              right: 70,
+              left: 14 + MediaQuery.of(context).padding.left,
+              right: 165,
               bottom: 24 + MediaQuery.of(context).padding.bottom,
               child: AnimatedOpacity(
-                opacity: _showControls ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
+                opacity: (_showControls && !_isLocked) ? 1.0 : 0.0,
+                duration: AppTheme.animNormal,
+                curve: AppTheme.animCurve,
                 child: IgnorePointer(
-                  ignoring: !_showControls,
+                  ignoring: !_showControls || _isLocked,
                   child: _buildBottomLeftInfo(),
                 ),
               ),

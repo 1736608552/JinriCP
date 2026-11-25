@@ -135,7 +135,6 @@ class AppTheme {
     Color? customBg,
     Color? customBorderColor,
   }) {
-    final dark = isDark(context);
     return BoxDecoration(
       color: customBg ?? cardBg(context),
       borderRadius: BorderRadius.circular(radius),
@@ -144,6 +143,56 @@ class AppTheme {
         width: 0.8,
       ),
       boxShadow: cardShadow(context),
+    );
+  }
+
+  // ================= 播控专用高定规范 (Player UI System) =================
+  static const Duration animFast = Duration(milliseconds: 180);
+  static const Duration animNormal = Duration(milliseconds: 260);
+  static const Curve animCurve = Curves.easeOutCubic;
+
+  /// 播放器顶部渐变遮罩（确保亮画面下状态栏与标题清晰可读）
+  static const LinearGradient playerTopScrim = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color(0xCC000000),
+      Color(0x66000000),
+      Colors.transparent,
+    ],
+  );
+
+  /// 播放器底部渐变遮罩
+  static const LinearGradient playerBottomScrim = LinearGradient(
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+    colors: [
+      Color(0xDD000000),
+      Color(0x73000000),
+      Colors.transparent,
+    ],
+  );
+
+  /// 播控悬浮玻璃胶囊装饰
+  static BoxDecoration playerGlassDecoration({
+    double radius = 24,
+    Color? borderColor,
+    double bgOpacity = 0.55,
+  }) {
+    return BoxDecoration(
+      color: Colors.black.withOpacity(bgOpacity),
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(
+        color: borderColor ?? Colors.white.withOpacity(0.16),
+        width: 0.8,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.35),
+          blurRadius: 16,
+          offset: const Offset(0, 4),
+        ),
+      ],
     );
   }
 }

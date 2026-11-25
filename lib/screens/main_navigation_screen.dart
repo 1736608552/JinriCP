@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import '../services/settings_service.dart';
 import '../services/theme_service.dart';
@@ -145,6 +146,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   final item = items[index];
                   final isSelected = index == activeIndex;
                   return _buildNavItem(item, isSelected, () {
+                    if (!isSelected) {
+                      HapticFeedback.selectionClick();
+                    }
                     setState(() {
                       _currentIndex = index;
                     });

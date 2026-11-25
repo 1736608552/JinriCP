@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -9,6 +10,7 @@ import '../services/system_controls_service.dart';
 import '../services/drama_service.dart';
 import '../services/settings_service.dart';
 import '../services/drama_history_service.dart';
+import '../services/theme_service.dart';
 import '../widgets/player_gesture_overlay.dart';
 
 class DramaPlayerScreen extends StatefulWidget {
@@ -45,6 +47,17 @@ class _DramaPlayerScreenState extends State<DramaPlayerScreen> with WidgetsBindi
   VoidCallback? _videoListener;
   bool _isDisposed = false;
   int _playSessionId = 0;
+  bool _showControls = true;
+  double _playbackSpeed = 1.0;
+
+  void _cyclePlaybackSpeed() {
+    HapticFeedback.selectionClick();
+    const speeds = [1.0, 1.25, 1.5, 2.0];
+    final nextIdx = (speeds.indexOf(_playbackSpeed) + 1) % speeds.length;
+    final nextSpeed = speeds[nextIdx];
+    setState(() => _playbackSpeed = nextSpeed);
+    _videoPlayerController?.setPlaybackSpeed(nextSpeed);
+  }
 
   @override
   void initState() {
@@ -1065,69 +1078,152 @@ class _DramaPlayerScreenState extends State<DramaPlayerScreen> with WidgetsBindi
                             key: ValueKey('chewie_${widget.drama.id}_$_currentEpIndex'),
                             controller: _chewieController!,
                           ),
-                          // 🌟 竖屏手势控光控音层
+                          // 🌟 竖屏手势控光控音 + 横向 Seek + 长按 2x 倍速 + 单击沉浸清屏
                           Positioned(
                             top: MediaQuery.of(context).padding.top + 60,
                             bottom: 80,
                             left: 0,
                             right: 0,
-                            child: const PlayerGestureOverlay(),
+                            child: PlayerGestureOverlay(
+                              onTap: () => setState(() => _showControls = !_showControls),
+                              onDoubleTap: () {
+                                HapticFeedback.lightImpact();
+                                if (_videoPlayerController != null && _videoPlayerController!.value.isInitialized) {
+                                  if (_videoPlayerController!.value.isPlaying) {
+                                    _videoPlayerController!.pause();
+                                  } else {
+                                    _videoPlayerController!.play();
+                                  }
+                                }
+                              },
+                              onNextChannel: _playNextEpisode,
+                              onPrevChannel: _currentEpIndex > 0 ? _playPrevEpisode : null,
+                              currentPosition: _videoPlayerController?.value.position,
+                              totalDuration: _videoPlayerController?.value.duration,
+                              onSeekTo: (pos) => _videoPlayerController?.seekTo(pos),
+                              onLongPressSpeedStart: () => _videoPlayerController?.setPlaybackSpeed(2.0),
+                              onLongPressSpeedEnd: () => _videoPlayerController?.setPlaybackSpeed(_playbackSpeed),
+                            ),
                           ),
                         ],
                       ),
 
-            // 2. 顶部导航栏（返回 + 剧集名称 + 选集信息）
+            // 1.5 顶部与底部渐变遮罩
+            if (_showControls) ...[
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).padding.top + 84,
+                child: const IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(gradient: AppTheme.playerTopScrim),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).padding.bottom + 100,
+                child: const IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(gradient: AppTheme.playerBottomScrim),
+                  ),
+                ),
+              ),
+            ],
+
+            // 2. 顶部导航栏（返回 + 剧集名称 + 倍速切换）
             Positioned(
               top: MediaQuery.of(context).padding.top + 8,
               left: 12,
               right: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.45),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: Colors.white.withOpacity(0.15), width: 0.8),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
-                      onPressed: () {
-                        _isDisposed = true;
-                        _playSessionId++;
-                        _saveCurrentProgress();
-                        _releaseCurrentPlayer();
-                        Navigator.pop(context);
-                      },
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            widget.drama.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w800),
+              child: AnimatedOpacity(
+                opacity: _showControls ? 1.0 : 0.0,
+                duration: AppTheme.animNormal,
+                curve: AppTheme.animCurve,
+                child: IgnorePointer(
+                  ignoring: !_showControls,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    decoration: AppTheme.playerGlassDecoration(radius: 22, bgOpacity: 0.48),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                          onPressed: () {
+                            _isDisposed = true;
+                            _playSessionId++;
+                            _saveCurrentProgress();
+                            _releaseCurrentPlayer();
+                            Navigator.pop(context);
+                          },
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.drama.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w800),
+                              ),
+                              Text(
+                                '第 ${_currentEpIndex + 1} 集 / 共 ${widget.drama.totalEpisodes} 集${widget.drama.playCount.isNotEmpty ? ' · 🔥 ${widget.drama.playCount}' : ''}',
+                                style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 11),
+                              ),
+                            ],
                           ),
-                          Text(
-                            '第 ${_currentEpIndex + 1} 集 / 共 ${widget.drama.totalEpisodes} 集${widget.drama.playCount.isNotEmpty ? ' · 🔥 ${widget.drama.playCount}' : ''}',
-                            style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
+                        ),
+                        // 倍速切换胶囊
+                        GestureDetector(
+                          onTap: _cyclePlaybackSpeed,
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: _playbackSpeed != 1.0
+                                  ? AppTheme.primaryPink.withOpacity(0.28)
+                                  : Colors.white.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: _playbackSpeed != 1.0
+                                    ? AppTheme.primaryPink.withOpacity(0.6)
+                                    : Colors.white.withOpacity(0.18),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Text(
+                              '${_playbackSpeed}x',
+                              style: TextStyle(
+                                color: _playbackSpeed != 1.0 ? AppTheme.accentPink : Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
 
-            // 3. 右侧快捷操作栏（点赞、选集、上下集快速切换）
+            // 3. 右侧快捷操作栏（点赞、评论、选集、上下集快速切换）
             Positioned(
               right: 12,
               bottom: 100,
-              child: Column(
+              child: AnimatedOpacity(
+                opacity: _showControls ? 1.0 : 0.0,
+                duration: AppTheme.animNormal,
+                curve: AppTheme.animCurve,
+                child: IgnorePointer(
+                  ignoring: !_showControls,
+                  child: Column(
                 children: [
                   // 点赞
                   IconButton(
@@ -1217,6 +1313,8 @@ class _DramaPlayerScreenState extends State<DramaPlayerScreen> with WidgetsBindi
                   const SizedBox(height: 4),
                   const Text('下一集', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                 ],
+              ),
+                ),
               ),
             ),
           ],
